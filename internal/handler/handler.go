@@ -30,6 +30,8 @@ type Handler struct {
 	users models.UserInterface
 	files models.FileInterface
 	db    models.DBInterface
+
+	salt string
 }
 
 func New() *Handler {
@@ -42,6 +44,8 @@ func (h *Handler) Start(c *Config) error {
 	if err := h.setLogging(viper.GetString("log_level"), viper.GetStringSlice("log_output")...); err != nil {
 		return err
 	}
+
+	h.salt = c.PasswordSalt
 
 	// user store
 	usersInterface, err := c.Users.Setup()
@@ -69,9 +73,19 @@ func (h *Handler) Start(c *Config) error {
 	v1 := router.Group("/v1")
 	{
 		v1.POST("/version", h.apiV1Version)
-		v1.GET("/hello/:name", h.apiV1Hello)
+		v1.POST("/login", h.apiV1Login)  // login
 		v1.POST("/users", h.apiV1Signup) // new user
 		// v1.PUT("/users", h.apiV1UpdateUser) // update existing user
+	}
+	{
+		hasAccount := v1.Group("/")
+		hasAccount.Use(JWTAuthenticationRequired())
+		hasAccount.GET("/users/:username/activate/:token", h.apiV1ActivateAccount) // login
+	}
+	{
+		standardUser := v1.Group("/")
+		standardUser.Use(JWTAuthenticationRequired("user"))
+		standardUser.GET("/hello/:name", h.apiV1Hello)
 	}
 
 	// start https server

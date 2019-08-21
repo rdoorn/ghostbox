@@ -13,8 +13,8 @@ LASTCOMMIT := $(shell git rev-parse --verify HEAD)
 BUILD := $(shell cat tools/rpm/BUILDNR)
 LDFLAGS := "-X main.version=$(VERSION) -X main.versionBuild=$(BUILD) -X main.versionSha=$(LASTCOMMIT)"
 PENDINGCOMMIT := $(shell git diff-files --quiet --ignore-submodules && echo 0 || echo 1)
-#TESTPARAMS := serve --pid-file /tmp/ixxi.pid --port 8080 --config-file 
-TESTPARAMS := serve --config-file ixxi.example.yaml
+# config points to oudside the repo
+TESTPARAMS := serve --config-file ~/ixxi.yaml 
 
 default: build
 

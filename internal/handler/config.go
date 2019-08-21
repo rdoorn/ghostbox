@@ -14,6 +14,8 @@ import (
 const (
 	// Name is the application name
 	Name string = "ixxi"
+	// DefaultPasswordSalt is the Password salt used if not provided
+	DefaultPasswordSalt string = "iP3x.!fNBe;Ajf0="
 )
 
 var (
@@ -35,15 +37,16 @@ var (
 
 // Config holds your main config
 type Config struct {
-	LogLevel  string              `mapstructure:"log_level"`
-	LogOutput []string            `mapstructure:"log_output"`
-	PidFile   string              `mapstructure:"pid_file"`
-	Listener  string              `mapstructure:"listener"`
-	Port      int                 `mapstructure:"port"`
-	TLS       tlsconfig.TLSConfig `mapstructure:"tls"`
-	Users     ixdb.DB             `mapstructure:"user_provider"`
-	File      ixdb.DB             `mapstructure:"file_provider"`
-	DB        ixdb.DB             `mapstructure:"db_provider"`
+	LogLevel     string              `mapstructure:"log_level"`
+	LogOutput    []string            `mapstructure:"log_output"`
+	PidFile      string              `mapstructure:"pid_file"`
+	Listener     string              `mapstructure:"listener"`
+	Port         int                 `mapstructure:"port"`
+	TLS          tlsconfig.TLSConfig `mapstructure:"tls"`
+	Users        ixdb.DB             `mapstructure:"user_provider"`
+	File         ixdb.DB             `mapstructure:"file_provider"`
+	DB           ixdb.DB             `mapstructure:"db_provider"`
+	PasswordSalt string              `mapstructure:"password_salt"`
 }
 
 func (c *Config) Verify() error {
@@ -89,6 +92,10 @@ func (c *Config) Verify() error {
 	}
 	if err := c.DB.Verify(); err != nil {
 		return fmt.Errorf("Invalid database store: %s", err)
+	}
+
+	if c.PasswordSalt == "" {
+		c.PasswordSalt = DefaultPasswordSalt
 	}
 	return nil
 }
