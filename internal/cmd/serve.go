@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/rdoorn/ghostbox/internal/ghostbox"
+	"github.com/rdoorn/ixxi/internal/handler"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,7 +31,7 @@ func serveCmd() *cobra.Command {
 func serve() func(command *cobra.Command, args []string) {
 	return func(command *cobra.Command, args []string) {
 
-		var config ghostbox.Config
+		var config handler.Config
 		if err := viper.Unmarshal(&config); err != nil {
 			fmt.Printf("failed to unmarshal config: %s\n", err)
 			os.Exit(255)
@@ -43,8 +43,8 @@ func serve() func(command *cobra.Command, args []string) {
 		}
 
 		// Start the application
-		ghostbox := ghostbox.New()
-		ghostbox.Start(&config)
+		ixxi := handler.New()
+		ixxi.Start(&config)
 
 		// wait for sigint or sigterm for cleanup - note that sigterm cannot be caught
 		sigterm := make(chan os.Signal, 10)
@@ -53,8 +53,8 @@ func serve() func(command *cobra.Command, args []string) {
 		for {
 			select {
 			case <-sigterm:
-				ghostbox.Warnf("Program killed by signal!")
-				ghostbox.Stop()
+				ixxi.Warnf("Program killed by signal!")
+				ixxi.Stop()
 				return
 			}
 		}

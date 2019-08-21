@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/rdoorn/ghostbox/internal/ghostbox"
+	"github.com/rdoorn/ixxi/internal/handler"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -36,7 +36,7 @@ func Execute() {
 		Long:  `a digital album indexer/viewer using http`,
 	}
 	// Root Flags
-	rootCmd.PersistentFlags().StringVar(&configFile, "config-file", fmt.Sprintf("/etc/%s/%s.yaml", ghostbox.Name, ghostbox.Name), "location of the config file")
+	rootCmd.PersistentFlags().StringVar(&configFile, "config-file", fmt.Sprintf("/etc/%s/%s.yaml", handler.Name, handler.Name), "location of the config file")
 	viper.BindPFlag("config_file", rootCmd.PersistentFlags().Lookup("config-file"))
 
 	rootCmd.PersistentFlags().String("log-level", "info", "level of logging (debug, info, warn, error)")
