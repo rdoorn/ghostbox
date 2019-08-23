@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rdoorn/gohelper/passwordhash"
 )
@@ -14,29 +16,34 @@ func (h *Handler) apiV1Login(c *gin.Context) {
 	//c.JSON(200, gin.H{"name": c.Param("name")})
 	var loginRequest loginRequestV1
 	if err := c.BindJSON(&loginRequest); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		setError(c, 400, err)
 		return
 	}
 
 	user, err := h.users.GetByEmail(loginRequest.Email)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		setError(c, 400, err)
 		return
 	}
+
+	log.Printf("user by email: %+v", user)
 
 	hasher, _ := passwordhash.New("sha256")
 	passwordHash := hasher.Hash(h.salt, user.PasswordSalt, loginRequest.Password)
 
 	if passwordHash != user.PasswordHash {
-		c.JSON(400, gin.H{"error": "invalid password"})
+		setError(c, 400, err)
 		return
 	}
 
-	jwtToken, err := h.NewJWTToken(user.ID, user.Username, user.Tokens)
+	token, err := h.NewJWTTokenResponse(user.Id(), user.Username, user.Tokens)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "failed to create a token"})
+		setError(c, 400, err)
 		return
 	}
+	/*
+		jwtToken, err := h.NewJWTToken(user.ID, user.Username, user.Tokens)
+	*/
 
-	c.JSON(200, gin.H{"error": "", "token": jwtToken})
+	c.JSON(200, token)
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -9,10 +10,36 @@ import (
 	"github.com/rdoorn/gohelper/jwthelper"
 )
 
+var (
+	JWTExpireDuration time.Duration = 24 * time.Hour
+)
+
+type apiTokenResponseV1 struct {
+	*ApiResponse
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"` // Bearer
+	ExpiresIn    int    `json:"expires_in"`
+	RefreshToken string `json:"refresh_token"` // not used yet
+}
+
 type JWTCredentials struct {
 	*jwthelper.Credentials
 	Username string
 	Expire   time.Time
+}
+
+func (h *Handler) NewJWTTokenResponse(id, username string, tokens []string) (*apiTokenResponseV1, error) {
+	h.Debugf("creating token for", "id", id, "type", fmt.Sprintf("%T", id))
+	accessToken, err := h.NewJWTToken(id, username, tokens)
+	if err != nil {
+		return nil, err
+	}
+	response := &apiTokenResponseV1{
+		AccessToken: accessToken,
+		TokenType:   "Bearer",
+		ExpiresIn:   int(JWTExpireDuration / time.Second),
+	}
+	return response, nil
 }
 
 func (h *Handler) NewJWTToken(id, username string, tokens []string) (string, error) {
@@ -54,16 +81,22 @@ func JWTAuthenticationRequired(tokens ...string) gin.HandlerFunc {
 		auth := c.GetHeader("Authorization")
 		a := strings.Split(auth, " ")
 		if a[0] != "BEARER" && len(a) < 2 {
-			c.JSON(400, gin.H{"error": "invalid authorization header", "redirect": "/login"})
+			setErrorRedirect(c, 403, fmt.Errorf("invalid authorization header"), "/login")
+			c.Abort()
+			return
 		}
 
 		token := &JWTCredentials{}
 		if err := jwthelper.Validate(a[1], token); err != nil {
-			c.JSON(400, gin.H{"error": "invalid authentication token", "redirect": "/login"})
+			setErrorRedirect(c, 403, fmt.Errorf("invalid authentication token"), "/login")
+			c.Abort()
+			return
 		}
 
 		if token.Expire.Before(time.Now()) {
-			c.JSON(400, gin.H{"error": "token expired", "redirect": "/login"})
+			setErrorRedirect(c, 403, fmt.Errorf("token expired"), "/login")
+			c.Abort()
+			return
 		}
 
 		tokensRequired := len(tokens)
@@ -76,7 +109,9 @@ func JWTAuthenticationRequired(tokens ...string) gin.HandlerFunc {
 		}
 
 		if tokensRequired != 0 {
-			c.JSON(400, gin.H{"error": "not authorized"})
+			setError(c, 403, fmt.Errorf("not authorized"))
+			c.Abort()
+			return
 		}
 
 		c.Set("token", token)

@@ -44,7 +44,10 @@ func serve() func(command *cobra.Command, args []string) {
 
 		// Start the application
 		ixxi := handler.New()
-		ixxi.Start(&config)
+		if err := ixxi.Start(&config); err != nil {
+			fmt.Printf("failed startup: %s\n", err)
+			os.Exit(255)
+		}
 
 		// wait for sigint or sigterm for cleanup - note that sigterm cannot be caught
 		sigterm := make(chan os.Signal, 10)

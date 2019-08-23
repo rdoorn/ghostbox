@@ -16,6 +16,13 @@ const (
 	Name string = "ixxi"
 	// DefaultPasswordSalt is the Password salt used if not provided
 	DefaultPasswordSalt string = "iP3x.!fNBe;Ajf0="
+
+	// KB is one kilo byte
+	KB int64 = 1024
+	// MB is one mega byte
+	MB int64 = 1024 * 1024
+	// GB is one giga byte
+	GB int64 = 1024 * 1024 * 1024
 )
 
 var (
@@ -33,6 +40,9 @@ var (
 	FailedReloadTime time.Time
 	// FailedReloadError last time a reload failed
 	FailedReloadError string
+
+	// FreeTeerStorageLimitMB is the storage limit of newly registered non-paying users
+	FreeTeerStorageLimitMB = 1 * GB
 )
 
 // Config holds your main config

@@ -2,4 +2,6 @@
 
 token=$(cat token)
 
-curl -H "Content-Type: application/json" -H "Authorization: BEARER ${token}" -X GET http://localhost:8080/v1/users/username/activate/fb3a85b2-d7fb-4433-88d8-da3ae27cb3fa
+curl -H "Content-Type: application/json" -H "Authorization: BEARER ${token}" -X GET http://localhost:8080/v1/users/theOne/activate/52557f8f-bbd3-40b2-984e-5b90e54f4e05 -o output
+sed -e 's/.*access_token":"//' output | cut -f1 -d\"  > token
+rm output

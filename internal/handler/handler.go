@@ -48,11 +48,13 @@ func (h *Handler) Start(c *Config) error {
 	h.salt = c.PasswordSalt
 
 	// user store
+	h.Debugf("setting up user DB", "provider", fmt.Sprintf("%s", c.Users.Provider))
 	usersInterface, err := c.Users.Setup()
 	if err != nil {
 		return err
 	}
 	h.users = usersInterface.(models.UserInterface)
+	h.Debugf("setup user DB", "provider", fmt.Sprintf("%s", usersInterface))
 
 	// file store
 	fileInterface, err := c.File.Setup()
@@ -80,12 +82,13 @@ func (h *Handler) Start(c *Config) error {
 	{
 		hasAccount := v1.Group("/")
 		hasAccount.Use(JWTAuthenticationRequired())
-		hasAccount.GET("/users/:username/activate/:token", h.apiV1ActivateAccount) // login
+		hasAccount.GET("/users/:username/activate/:token", h.apiV1AccountActivate) // login
 	}
 	{
 		standardUser := v1.Group("/")
 		standardUser.Use(JWTAuthenticationRequired("user"))
 		standardUser.GET("/hello/:name", h.apiV1Hello)
+		standardUser.GET("/users/:username", h.apiV1AccountGet) // login
 	}
 
 	// start https server

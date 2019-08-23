@@ -1,22 +1,51 @@
 package handler
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) apiV1ActivateAccount(c *gin.Context) {
+func (h *Handler) apiV1AccountActivate(c *gin.Context) {
 
 	activationToken := c.Param("token")
 	if activationToken == "" {
 		c.JSON(400, gin.H{"error": "missing activation token"})
 	}
 	token, _ := c.Get("token")
+	log.Printf("token: %+v credendials: %+v", token, token.(*JWTCredentials).Credentials)
 
-	h.users.ActivateUser(token.(*JWTCredentials).Id)
+	// update account to be active
+	err := h.users.ActivateUser(token.(*JWTCredentials).Id, activationToken)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
-	c.JSON(200, gin.H{"error": "", "redirect": fmt.Sprintf("/%s", token.(*JWTCredentials).Username)})
+	err = h.users.SetStorageLimit(token.(*JWTCredentials).Id, FreeTeerStorageLimitMB)
+
+	// update account with new token now that user is active
+	err = h.users.AddToken(token.(*JWTCredentials).Id, "user")
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get new user settings
+	user, err := h.users.GetByID(token.(*JWTCredentials).Id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	// re-issue token
+	newToken, err := h.NewJWTTokenResponse(user.Id(), user.Username, user.Tokens)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "failed to create a token"})
+		return
+	}
+
+	c.JSON(200, newToken)
 	/*
 		user, err := h.users.GetByEmail(loginRequest.Email)
 		if err != nil {
