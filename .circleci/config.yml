@@ -11,7 +11,7 @@ jobs:
     working_directory: /go/src/github.com/rdoorn/ixxi
     branches:
       only:
-        - *
+        - /.*/
       ignore:
         - master
     steps:
