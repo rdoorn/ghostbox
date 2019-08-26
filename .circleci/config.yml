@@ -9,70 +9,16 @@ jobs:
       - image: circleci/golang
 
     working_directory: /go/src/github.com/rdoorn/ixxi
-    branches:
-      ignore:
-        - master
     steps:
       - checkout
 
-      # specify any bash command here prefixed with `run: `
-      # - run: go get -v -t -d ./...
+      - run: SOURCE_BRANCH="<<pipeline.pull_request.source_branch>>"
       - run: env
       - run: make deps
       - run: make test
       - run: make build
 
-  package:
-    docker:
-      # specify the version
-      - image: circleci/golang
-
-    #### TEMPLATE_NOTE: go expects specific checkout path representing url
-    #### expecting it in the form of
-    ####   /go/src/github.com/circleci/go-tool
-    ####   /go/src/bitbucket.org/circleci/go-tool
-    working_directory: /go/src/github.com/rdoorn/ixxi
-    branches:
-      only:
-        - master
-    steps:
-      - checkout
-
-      # specify any bash command here prefixed with `run: `
-      # - run: go get -v -t -d ./...
-      - run: make deps
-      - run: make test
-      - run: make get-version
-      - run: |
-           major=$(cat .version | cut -f1 -d.)
-           minor=$(cat .version | cut -f2 -d.)
-           patch=$(cat .version | cut -f3 -d. | cut -f1 -d-)
-           case ${CIRCLE_BRANCH}
-           bug-*)
-             patch=$((patch+1))
-           feat-*)
-             patch=0
-             minor=$((minor+1))
-           major-*)
-             patch=0
-             minor=0
-             major=$((major+1))
-           ;;
-           echo "old version: $(cat .version) new: ${major}.${minor}.${patch}"
-           echo "${major}.${minor}.${patch}" > .version
-           esac
-      - run: make linux-package
       - run: 
           name: "Publish Release on GitHub"
-          command: |
-            go get github.com/tcnksm/ghr
-            VERSION=$(cat .version)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./build/packages/
-
-            #workflows:
-            #version: 2
-            #build_and_test:
-            #jobs:
-            #- test
-            #- package
+          command: ./tools/ci-package.sh
 

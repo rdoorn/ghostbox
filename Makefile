@@ -131,6 +131,9 @@ get-version:
 	echo "path: ${PWD}"
 	cat .version
 
+ci-package:
+	./tools/ci-package.sh
+
 #authors:
 #	@git log --format='%aN <%aE>' | LC_ALL=C.UTF-8 sort | uniq -c | sort -nr | sed "s/^ *[0-9]* //g" > AUTHORS
 #	@cat AUTHORS
