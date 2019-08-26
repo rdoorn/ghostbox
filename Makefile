@@ -27,8 +27,8 @@ clean:
 rice:
 	@echo Merging static content...
 	#@which rice >/dev/null; if [ $$? -eq 1 ]; then \
-		go get github.com/GeertJohan/go.rice/rice; \
-	fi;
+		#go get github.com/GeertJohan/go.rice/rice; \
+	#fi;
 	#cd internal/core && rice embed-go
 	@echo Done
 
