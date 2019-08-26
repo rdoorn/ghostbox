@@ -10,8 +10,6 @@ jobs:
 
     working_directory: /go/src/github.com/rdoorn/ixxi
     branches:
-      only:
-        - /.*/
       ignore:
         - master
     steps:
@@ -53,4 +51,11 @@ jobs:
             go get github.com/tcnksm/ghr
             VERSION=$(cat .version)
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./build/packages/
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test
 
