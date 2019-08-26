@@ -2,6 +2,11 @@
 
 env
 
+echo "param1: $1"
+
+git describe --tags --always > .version
+echo "path: ${PWD} version: $(cat .version)"
+
 if [ "${CIRCLE_BRANCH}" != "master" ]; then
     echo "Branch is: [${CIRCLE_BRANCH}] skipping packaging"
     exit 0

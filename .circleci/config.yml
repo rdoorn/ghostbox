@@ -12,7 +12,6 @@ jobs:
     steps:
       - checkout
 
-      - run: SOURCE_BRANCH="<<pipeline.pull_request.source_branch>>"
       - run: env
       - run: make deps
       - run: make test
@@ -20,5 +19,5 @@ jobs:
 
       - run: 
           name: "Publish Release on GitHub"
-          command: ./tools/ci-package.sh
+          command: ./tools/ci-package.sh <<pipeline.pull_request.source_branch>>
 
