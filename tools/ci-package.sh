@@ -16,7 +16,7 @@ fi
 major=$(cat .version | cut -f1 -d.)
 minor=$(cat .version | cut -f2 -d.)
 patch=$(cat .version | cut -f3 -d. | cut -f1 -d-)
-case ${CIRCLE_BRANCH}
+case "${CIRCLE_BRANCH}" in
     bug-*)
         patch=$((patch+1))
         ;;
