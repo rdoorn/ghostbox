@@ -2,8 +2,11 @@
 
 env
 
+
 echo "param1: $1"
 
+REF=$(git log --graph  --pretty=format:%D -1 | cut -f2 -d, | sed -e 's/.*\///g')
+echo "ref: ${REF}"
 git describe --tags --always > .version
 echo "path: ${PWD} version: $(cat .version)"
 
@@ -16,7 +19,7 @@ fi
 major=$(cat .version | cut -f1 -d.)
 minor=$(cat .version | cut -f2 -d.)
 patch=$(cat .version | cut -f3 -d. | cut -f1 -d-)
-case "${CIRCLE_BRANCH}" in
+case "${REF}" in
     bug-*)
         patch=$((patch+1))
         ;;
