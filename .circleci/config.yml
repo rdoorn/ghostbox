@@ -20,10 +20,9 @@ jobs:
       - run: env
       - run: make deps
       - run: make test
-      - run: make get-version
       - run: make build
 
-  build:
+  package:
     docker:
       # specify the version
       - image: circleci/golang
@@ -44,7 +43,25 @@ jobs:
       - run: make deps
       - run: make test
       - run: make get-version
-      - run: make build
+      - run: |
+           major=$(cat .version | cut -f1 -d.)
+           minor=$(cat .version | cut -f2 -d.)
+           patch=$(cat .version | cut -f3 -d. | cut -f1 -d-)
+           case ${CIRCLE_BRANCH}
+           bug-*)
+             patch=$((patch+1))
+           feat-*)
+             patch=0
+             minor=$((minor+1))
+           major-*)
+             patch=0
+             minor=0
+             major=$((major+1))
+           ;;
+           echo "old version: $(cat .version) new: ${major}.${minor}.${patch}"
+           echo "${major}.${minor}.${patch}" > .version
+           esac
+      - run: make linux-package
       - run: 
           name: "Publish Release on GitHub"
           command: |
@@ -57,5 +74,5 @@ workflows:
   build_and_test:
     jobs:
       - test
-      - build
+      - package
 

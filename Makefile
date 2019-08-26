@@ -8,7 +8,7 @@
 export PATH := $(PATH):$(GOPATH)/bin
 
 NAME := ixxid
-VERSION := $(shell [ -f .version ] && cat .version)
+VERSION := $(shell [ -f .version ] && cat .version || echo "pipeline-test")
 LASTCOMMIT := $(shell git rev-parse --verify HEAD)
 #BUILD := $(shell cat tools/rpm/BUILDNR)
 BUILD := "1"
