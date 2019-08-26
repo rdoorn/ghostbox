@@ -96,7 +96,7 @@ func (m *MongoDB) AddToken(id string, tokens ...string) error {
 	filter := bson.M{"_id": bsonID}
 
 	//update := bson.M{"$addToSet": bson.M{"tokens": tokens}}
-	update := bson.M{"$push": bson.M{"tokens": tokens}}
+	update := bson.M{"$push": bson.M{"tokens": bson.M{"$each": tokens}}}
 
 	collection := m.database.Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
