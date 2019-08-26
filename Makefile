@@ -8,9 +8,10 @@
 export PATH := $(PATH):$(GOPATH)/bin
 
 NAME := ixxid
-VERSION := $(shell cat VERSION)
+VERSION := $(shell [ -f .version ] && cat .version)
 LASTCOMMIT := $(shell git rev-parse --verify HEAD)
-BUILD := $(shell cat tools/rpm/BUILDNR)
+#BUILD := $(shell cat tools/rpm/BUILDNR)
+BUILD := "1"
 LDFLAGS := "-X main.version=$(VERSION) -X main.versionBuild=$(BUILD) -X main.versionSha=$(LASTCOMMIT)"
 PENDINGCOMMIT := $(shell git diff-files --quiet --ignore-submodules && echo 0 || echo 1)
 # config points to oudside the repo
@@ -34,7 +35,7 @@ rice:
 builddir:
 	@mkdir -p ./build/osx/
 	@mkdir -p ./build/linux/
-	@mkdir -p ./build/packages/
+	@mkdir -p ./build/packages/$(NAME)
 
 osx: builddir rice
 	@echo Building OSX...
@@ -101,11 +102,11 @@ ifeq ($(PENDINGCOMMIT), 1)
 	   $(error You have a pending commit, please commit your code before making a package $(PENDINGCOMMIT))
 endif
 
-linux-package: builddir linux committed
+linux-package: builddir linux # committed
 	cp -a ./tools/rpm/$(NAME)/* ./build/packages/$(NAME)/
 	cp ./build/linux/$(NAME) ./build/packages/$(NAME)/usr/sbin/
-	cp ./tools/html/* ./build/packages/$(NAME)/var/$(NAME)/
 	fpm -s dir -t rpm -C ./build/packages/$(NAME) --name $(NAME) --rpm-os linux --version $(VERSION) --iteration $(BUILD) --exclude "*/.keepme"
+	rm -rf ./build/packages/$(NAME)/
 	mv $(NAME)-$(VERSION)*.rpm build/packages/
 
 docker-scratch:
@@ -125,6 +126,10 @@ deps: ## Updates the vendored Go dependencies
 updatedeps: ## Updates the vendored Go dependencies
 	@dep ensure -update
 
+get-version:
+	git describe --tags --always > .version
+	echo "path: ${PWD}"
+	cat .version
 
 #authors:
 #	@git log --format='%aN <%aE>' | LC_ALL=C.UTF-8 sort | uniq -c | sort -nr | sed "s/^ *[0-9]* //g" > AUTHORS
