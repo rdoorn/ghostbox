@@ -52,3 +52,10 @@ jobs:
             VERSION=$(cat .version)
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./build/packages/
 
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - test
+      - build
+
