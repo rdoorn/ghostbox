@@ -1,0 +1,12 @@
+log_level: "debug"
+log_output: "stdout"
+pid_file: "/tmp/ixxid.pid"
+listener: "127.0.0.1"
+port: "8080"
+#TLS:
+user_provider:
+  Provider: "memory"
+file_provider:
+  Provider: "memory"
+db_provider:
+  Provider: "memory"

@@ -1,0 +1,16 @@
+[Unit]
+Description=ixxid
+After=network.target
+
+[Service]
+Environment=
+ExecStart=/usr/sbin/ixxid -config-file /etc/ixxid/ixxid.yaml $OPTIONS
+ExecReload=/bin/kill -1 $MAINPID
+KillSignal=TERM
+User=root
+WorkingDirectory=/
+Restart=always
+LimitNOFILE=16384
+
+[Install]
+WantedBy=multi-user.target
