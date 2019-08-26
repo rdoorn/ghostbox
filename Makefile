@@ -8,7 +8,7 @@
 export PATH := $(PATH):$(GOPATH)/bin
 
 NAME := ixxid
-VERSION := $(shell [ -f .version ] && cat .version)
+VERSION := $(shell [ -f .version ] && cat .version || echo "pipeline-test")
 LASTCOMMIT := $(shell git rev-parse --verify HEAD)
 #BUILD := $(shell cat tools/rpm/BUILDNR)
 BUILD := "1"
@@ -130,6 +130,9 @@ get-version:
 	git describe --tags --always > .version
 	echo "path: ${PWD}"
 	cat .version
+
+ci-package:
+	./tools/ci-package.sh
 
 #authors:
 #	@git log --format='%aN <%aE>' | LC_ALL=C.UTF-8 sort | uniq -c | sort -nr | sed "s/^ *[0-9]* //g" > AUTHORS
