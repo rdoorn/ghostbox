@@ -10,6 +10,7 @@ if [ "$1" == "init" ]; then
     git clone https://github.com/rdoorn/ixxi.git
     cd ixxi
     make deps
+    exit
 fi
 
 #REF=$(git log --graph  --pretty=format:%D -1 | cut -f2 -d, | sed -e 's/.*\///g')
