@@ -55,6 +55,8 @@ if [ $rebuild -eq 1 ]; then
     sudo apt-get --no-install-recommends install ruby ruby-dev rubygems build-essential rpm
     sudo gem install --no-ri --no-rdoc fpm
 
+
+
     make linux-package
 
     go get github.com/tcnksm/ghr

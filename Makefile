@@ -16,6 +16,7 @@ LDFLAGS := "-X main.version=$(VERSION) -X main.versionBuild=$(BUILD) -X main.ver
 PENDINGCOMMIT := $(shell git diff-files --quiet --ignore-submodules && echo 0 || echo 1)
 # config points to oudside the repo
 TESTPARAMS := serve --config-file ~/ixxi.yaml 
+GODIRS := $(shell go list -f '{{.Dir}}' ./...)
 
 default: build
 
@@ -90,7 +91,7 @@ cover: ## Shows coverage
 	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
 		go get -u golang.org/x/tools/cmd/cover; \
 	fi
-	go test ./internal/config -coverprofile=coverage.out
+	go test $(GODIRS) -coverprofile=coverage.out
 	go tool cover -html=coverage.out
 	rm coverage.out
 
