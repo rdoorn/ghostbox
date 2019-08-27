@@ -4,6 +4,13 @@ env
 
 
 echo "param1: $1"
+if [ "$1" == "init" ]; then
+    mkdir -p src/github.com/rdoorn
+    cd src/github.com/rdoorn
+    git clone https://github.com/rdoorn/ixxi.git
+    cd ixxi
+    make deps
+fi
 
 #REF=$(git log --graph  --pretty=format:%D -1 | cut -f2 -d, | sed -e 's/.*\///g')
 #echo "ref: ${REF}"
