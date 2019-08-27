@@ -87,13 +87,22 @@ test:
 	go test -v ./... --race --short
 	go vet ./...
 
-cover: ## Shows coverage
+coverage: ## Shows coverage
 	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
-		go get -u golang.org/x/tools/cmd/cover; \
+	    go get -u golang.org/x/tools/cmd/cover; \
 	fi
-	go test $(GODIRS) -coverprofile=coverage.out
-	go tool cover -html=coverage.out
-	rm coverage.out
+	for pkg in $(go list ./... | grep -v vendor); do
+	go test -coverprofile=$(echo $pkg | tr / -).cover $pkg
+	done
+	echo "mode: set" > c.out
+	grep -h -v "^mode:" ./*.cover >> c.out
+	rm -f *.cover
+
+coverage-upload:
+	curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+	chmod +x ./cc-test-reporter
+	./cc-test-reporter after-build
+	rm -f ./cc-test-reporter
 
 prep_package:
 	gem install fpm

@@ -16,6 +16,7 @@ jobs:
       - run: make deps
       - run: make test
       - run: make coverage
+      - run: make coverage-upload
       - run: make build
 
       - run: 
