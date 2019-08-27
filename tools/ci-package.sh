@@ -44,11 +44,12 @@ if [ $rebuild -eq 1 ]; then
     echo "old version: $(cat .version) new: ${major}.${minor}.${patch}"
     echo "${major}.${minor}.${patch}" > .version
 
+    apt-get --no-install-recommends install ruby ruby-dev rubygems build-essential
+    gem install --no-ri --no-rdoc fpm
 
-    gem install fpm
     make linux-package
 
     go get github.com/tcnksm/ghr
     VERSION=$(cat .version)
-    echo ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./build/packages/
+    ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ./build/packages/
 fi
