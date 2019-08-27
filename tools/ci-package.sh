@@ -45,7 +45,7 @@ if [ $rebuild -eq 1 ]; then
     echo "${major}.${minor}.${patch}" > .version
 
     sudo apt-get --no-install-recommends install ruby ruby-dev rubygems build-essential
-    gem install --no-ri --no-rdoc fpm
+    sudo gem install --no-ri --no-rdoc fpm
 
     make linux-package
 
