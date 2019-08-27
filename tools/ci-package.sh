@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 env
 
@@ -44,7 +44,7 @@ if [ $rebuild -eq 1 ]; then
     echo "old version: $(cat .version) new: ${major}.${minor}.${patch}"
     echo "${major}.${minor}.${patch}" > .version
 
-    apt-get --no-install-recommends install ruby ruby-dev rubygems build-essential
+    sudo apt-get --no-install-recommends install ruby ruby-dev rubygems build-essential
     gem install --no-ri --no-rdoc fpm
 
     make linux-package
