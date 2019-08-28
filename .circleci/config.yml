@@ -53,3 +53,9 @@ workflows:
             branches:
               only:
                 - master
+    jobs:
+      - test
+      - release:
+          requires:
+            - test
+
