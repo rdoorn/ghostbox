@@ -20,4 +20,4 @@ if [ "${CURRENT_GOLANG_VERSION}" == "${PREVIOUS_GOLANG_VERSION}" ]; then
 fi
 
 echo "new golang version available, rebuilding"
-./ci-package.sh automatic-patch: golang version update to ${CURRENT_GOLANG_VERSION}
+./tools/ci-package.sh automatic-patch: golang version update to ${CURRENT_GOLANG_VERSION}

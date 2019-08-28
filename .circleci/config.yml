@@ -54,10 +54,10 @@ workflows:
             branches:
               only: master
 
-  golang-update-check:
+  scheduled-golang-update-check:
     triggers:
       - schedule:
-          cron: "30 13 * * *"
+          cron: "45 13 * * *"
           filters:
             branches:
               only:
