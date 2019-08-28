@@ -12,3 +12,5 @@ if [ "${CURRENT_GOLANG_VERSION}" != "${PREVIOUS_GOLANG_VERSION}" ]; then
 else
     echo "up to date with latest golang version"
 fi
+
+

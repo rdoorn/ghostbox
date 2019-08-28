@@ -28,32 +28,30 @@ REF=$(git log -1 --pretty=%B)
 major=$(cat .version | cut -f1 -d.)
 minor=$(cat .version | cut -f2 -d.)
 patch=$(cat .version | cut -f3 -d. | cut -f1 -d-)
-rebuild=0
+oldverison="${major}.${minor}.${patch}"
 case "${REF}" in
     bugfix:*|bug:*|fix:*)
         patch=$((patch+1))
-        rebuild=1
         ;;
     feature:*|feat:*)
         patch=0
         minor=$((minor+1))
-        rebuild=1
         ;;
     major:*)
         patch=0
         minor=0
         major=$((major+1))
-        rebuild=1
         ;;
 esac
+newversion="${major}.${minor}.${patch}"
 
-if [ $rebuild -eq 0 ]; then
-    echo "version not updated: old: $(cat .version) new: ${major}.${minor}.${patch}"
+if [ "${oldversion}" == "${newversion}" ]; then
+    echo "version not updated: old: ${oldversion} new: ${newversion}"
     exit 0
 fi
 
-echo "new version to be created: old: $(cat .version) new: ${major}.${minor}.${patch}"
-echo "${major}.${minor}.${patch}" > .version
+echo "new version to be created: old: ${oldversion} new: ${newversion}"
+echo "${newversion}" > .version
 
 sudo apt-get --no-install-recommends install ruby ruby-dev rubygems build-essential rpm
 sudo gem install --no-ri --no-rdoc fpm
