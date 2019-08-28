@@ -91,9 +91,7 @@ coverage: ## Shows coverage
 	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
 	    go get -u golang.org/x/tools/cmd/cover; \
 	fi
-	for pkg in $(go list ./... | grep -v vendor); do
-	go test -coverprofile=$(echo $pkg | tr / -).cover $pkg
-	done
+	for pkg in $(GODIRS); do go test -coverprofile=go$${pkg//\//-}.cover $$pkg ;done
 	echo "mode: set" > c.out
 	grep -h -v "^mode:" ./*.cover >> c.out
 	rm -f *.cover
