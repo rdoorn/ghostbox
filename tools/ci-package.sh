@@ -63,4 +63,7 @@ make linux-package
 go get github.com/tcnksm/ghr
 VERSION=$(cat .version)
 
+# add go version to bins
+go version > ./build/packages/golang.version
+
 ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -n "${CIRCLE_PROJECT_REPONAME^} v${VERSION}" ${VERSION} ./build/packages/
