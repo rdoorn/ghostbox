@@ -29,8 +29,20 @@ jobs:
       - run: make deps
 
       - run: 
-          name: "Publish Release on GitHub"
+          name: "Publish Release on GitHub - due to merge"
           command: ./tools/ci-package.sh
+
+  automated-golang-version:
+    executor: golang
+    steps:
+      - checkout
+
+      - run: env
+      - run: make deps
+
+      - run: 
+          name: "Publish Release on GitHub - due to golang version"
+          command: ./tools/golang-update.sh
 
 workflows:
   version: 2
@@ -48,14 +60,14 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "0 13 * * *"
+          cron: "18 13 * * *"
           filters:
             branches:
               only:
                 - master
     jobs:
       - test
-      - release:
+      - automated-golang-version:
           requires:
             - test
 
