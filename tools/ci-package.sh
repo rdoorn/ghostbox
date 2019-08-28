@@ -22,7 +22,13 @@ if [ "${CIRCLE_BRANCH}" != "master" ]; then
     exit 0
 fi
 
-REF=$(git log -1 --pretty=%B)
+if [ "$1" == "" ]; then
+    REF=$(git log -1 --pretty=%B)
+    echo "Last commit subject: ${REF}"
+else
+    REF="$@"
+    echo "Manual commit subject: ${REF}"
+fi
 
 
 major=$(cat .version | cut -f1 -d.)
@@ -30,7 +36,7 @@ minor=$(cat .version | cut -f2 -d.)
 patch=$(cat .version | cut -f3 -d. | cut -f1 -d-)
 oldverison="${major}.${minor}.${patch}"
 case "${REF}" in
-    bugfix:*|bug:*|fix:*)
+    bugfix:*|bug:*|fix:*|automatic-patch:*)
         patch=$((patch+1))
         ;;
     feature:*|feat:*)
