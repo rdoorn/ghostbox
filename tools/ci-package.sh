@@ -1,8 +1,5 @@
 #!/bin/bash -e
 
-env
-
-
 if [ "$1" == "init" ]; then
     mkdir -p src/github.com/rdoorn
     cd src/github.com/rdoorn
