@@ -3,7 +3,6 @@
 env
 
 
-echo "param1: $1"
 if [ "$1" == "init" ]; then
     mkdir -p src/github.com/rdoorn
     cd src/github.com/rdoorn
@@ -31,11 +30,11 @@ minor=$(cat .version | cut -f2 -d.)
 patch=$(cat .version | cut -f3 -d. | cut -f1 -d-)
 rebuild=0
 case "${REF}" in
-    bugfix:*)
+    bugfix:*|bug:*|fix:*)
         patch=$((patch+1))
         rebuild=1
         ;;
-    feature:*)
+    feature:*|feat:*)
         patch=0
         minor=$((minor+1))
         rebuild=1
@@ -48,19 +47,20 @@ case "${REF}" in
         ;;
 esac
 
-if [ $rebuild -eq 1 ]; then
-    echo "old version: $(cat .version) new: ${major}.${minor}.${patch}"
-    echo "${major}.${minor}.${patch}" > .version
-
-    sudo apt-get --no-install-recommends install ruby ruby-dev rubygems build-essential rpm
-    sudo gem install --no-ri --no-rdoc fpm
-
-
-
-    make linux-package
-
-    go get github.com/tcnksm/ghr
-    VERSION=$(cat .version)
-
-    ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -n "${CIRCLE_PROJECT_REPONAME^} v${VERSION}" ${VERSION} ./build/packages/
+if [ $rebuild -eq 0 ]; then
+    echo "version not updated: old: $(cat .version) new: ${major}.${minor}.${patch}"
+    exit 0
 fi
+
+echo "new version to be created: old: $(cat .version) new: ${major}.${minor}.${patch}"
+echo "${major}.${minor}.${patch}" > .version
+
+sudo apt-get --no-install-recommends install ruby ruby-dev rubygems build-essential rpm
+sudo gem install --no-ri --no-rdoc fpm
+
+make linux-package
+
+go get github.com/tcnksm/ghr
+VERSION=$(cat .version)
+
+ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -n "${CIRCLE_PROJECT_REPONAME^} v${VERSION}" ${VERSION} ./build/packages/
