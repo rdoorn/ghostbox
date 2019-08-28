@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-PREVIOUS_VERSION=$(git describe --tags --always)
+PREVIOUS_VERSION=$(git describe --tags --always | cut -f1 -d-)
 RESULT=$(curl -L https://github.com/rdoorn/ixxi/releases/download/${PREVIOUS_VERSION}/golang.version -o golang.version -w "%{http_code}")
 PREVIOUS_GOLANG_VERSION=$(cat golang.version)
 CURRENT_GOLANG_VERSION=$(go version)
