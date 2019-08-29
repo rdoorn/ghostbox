@@ -83,7 +83,7 @@ if [ $changelogaltered -eq 0 ]; then
         cat CHANGELOG.md >> CHANGELOG.md.tmp
     fi
     mv CHANGELOG.md.tmp CHANGELOG.md
-    echo "${BENDER_KEY}" >> ~/.ssh/id_bender
+    echo -e "${BENDER_KEY}" >> ~/.ssh/id_bender
     cat ~/.ssh/id_bender
     ssh-add -l
     chmod 600 ~/.ssh/id_bender
