@@ -8,11 +8,6 @@ executors:
     working_directory: /go/src/github.com/rdoorn/ixxi
 
 jobs:
-  skip:
-    executor: golang
-    steps:
-      - checkout
-
   test:
     executor: golang
     steps:
@@ -41,9 +36,16 @@ jobs:
 
       - run: make deps
 
-      - run: 
+      - run:
           name: "Publish Release on GitHub - if new golang version"
           command: ./tools/golang-update.sh
+
+
+  ok:
+    executor: golang
+    steps:
+      - run: true
+
 
 workflows:
   version: 2
@@ -54,16 +56,16 @@ workflows:
           filters:
             branches:
               ignore: /documentation-.*/
-      - skip:
-          filters:
-            branches:
-              only: /documentation-.*/
       - release:
           requires:
             - test
           filters:
             branches:
               only: master
+      - ok:
+          requires:
+            - test
+            - release
 
   scheduled-golang-update-check:
     triggers:
