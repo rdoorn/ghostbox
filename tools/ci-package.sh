@@ -88,7 +88,8 @@ if [ $changelogaltered -eq 0 ]; then
     export GIT_SSH_COMMAND="ssh -vv -i ~/.ssh/id_bender -F /dev/null -o IdentitiesOnly=yes" 
     git config --global user.name "Bender"
     git config --global user.email "bender1729@ixxi.io"
-    git commit -a -m 'updating change log with latest commit'
+    git add CHANGELOG.md
+    git commit -m 'updating change log with latest commit'
     git push
 fi
 
