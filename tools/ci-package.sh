@@ -73,7 +73,7 @@ ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_R
 changelogaltered=$(git diff --name-status HEAD^1 | grep -c CHANGELOG.md || true)
 if [ $changelogaltered -eq 0 ]; then
     git fetch
-    versionexists=$(grep -c "^# ${newversion}$" CHANGELOG.md)
+    versionexists=$(grep -c "^# ${newversion}$" CHANGELOG.md | true)
     if [ ${versionexists} -ne 0 ]; then
         echo "change log update has already been done, version already here"
     else
