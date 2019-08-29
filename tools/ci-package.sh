@@ -85,7 +85,7 @@ if [ $changelogaltered -eq 0 ]; then
     mv CHANGELOG.md.tmp CHANGELOG.md
     echo "${BENDER_KEY}" >> ~/.ssh/id_bender
     chmod 600 ~/.ssh/id_bender
-    export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_bender -F /dev/null" 
+    export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_bender -F /dev/null -o IdentitiesOnly=yes" 
     git config --global user.name "Bender"
     git config --global user.email "bender1729@ixxi.io"
     git commit -a -m 'updating change log with latest commit'
