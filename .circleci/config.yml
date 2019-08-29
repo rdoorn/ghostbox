@@ -45,10 +45,7 @@ workflows:
 
   build_test_package:
     jobs:
-      - test:
-          filters:
-            branches:
-              ignore: /documentation-.*/
+      - test
       - release:
           requires:
             - test
