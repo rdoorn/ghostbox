@@ -8,6 +8,11 @@ executors:
     working_directory: /go/src/github.com/rdoorn/ixxi
 
 jobs:
+  skip:
+    executor: golang
+    steps:
+      - checkout
+
   test:
     executor: golang
     steps:
@@ -45,7 +50,14 @@ workflows:
 
   build_test_package:
     jobs:
-      - test
+      - test:
+          filters:
+            branches:
+              ignore: /documentation-.*/
+      - skip:
+          filters:
+            branches:
+              only: /documentation-.*/
       - release:
           requires:
             - test
