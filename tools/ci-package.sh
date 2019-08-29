@@ -68,3 +68,26 @@ VERSION=$(cat .version)
 go version > ./build/packages/golang.version
 
 ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -n "${CIRCLE_PROJECT_REPONAME^} v${VERSION}" ${VERSION} ./build/packages/
+
+# at this time we are already master
+git diff --name-status HEAD^1 | grep CHANGELOG.md
+if [ $? -ne 0 ]; then
+    echo "change log was not updated, doing so automaticly..."
+    lastcommittext=$(git log ${oldversion}...${newversion} --pretty=%B | grep -v '^$' | grep :)
+    if [ ${lastcommittext} == "" ]; then 
+        lastcommittext="misc: $(git log ${oldversion}...${newversion} --pretty=%B)"
+    fi
+    echo -e "# ${newversion}\n${lastcommittext}\n\n" > CHANGELOG.md.tmp
+    if [ -f CHANGELOG.md ]; then
+        cat CHANGELOG.md >> CHANGELOG.md.tmp
+    fi
+    mv CHANGELOG.md.tmp CHANGELOG.md
+    echo "${BENDER_KEY}" >> ~/.ssh/id_bender
+    chmod 600 ~/.ssh/id_bender
+    export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_bender -F /dev/null" 
+    git config --global user.name "Bender"
+    git config --global user.email "bender1729@ixxi.io"
+    git commit -a -m 'updating change log with latest commit'
+    git push
+fi
+
