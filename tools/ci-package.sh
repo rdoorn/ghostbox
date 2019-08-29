@@ -70,8 +70,8 @@ go version > ./build/packages/golang.version
 ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -n "${CIRCLE_PROJECT_REPONAME^} v${VERSION}" ${VERSION} ./build/packages/
 
 # at this time we are already master
-git diff --name-status HEAD^1 | grep CHANGELOG.md
-if [ $? -ne 0 ]; then
+changelogaltered=$(git diff --name-status HEAD^1 | grep -c CHANGELOG.md || true)
+if [ $changelogaltered -eq 0 ]; then
     echo "change log was not updated, doing so automaticly..."
     lastcommittext=$(git log ${oldversion}...${newversion} --pretty=%B | grep -v '^$' | grep :)
     if [ ${lastcommittext} == "" ]; then 
