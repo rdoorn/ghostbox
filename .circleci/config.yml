@@ -46,7 +46,7 @@ jobs:
     steps:
       - run:
           name: "all is well"
-          command: true
+          command: echo true
 
 
 workflows:
