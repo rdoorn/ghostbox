@@ -72,6 +72,9 @@ ghr -soft -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_R
 # at this time we are already master
 changelogaltered=$(git diff --name-status HEAD^1 | grep -c CHANGELOG.md || true)
 if [ $changelogaltered -eq 0 ]; then
+    export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_bender -F /dev/null" 
+    git fetch
+    git pull
     echo "change log was not updated, doing so automaticly..."
     lastcommittext=$(git log ${oldversion}...${newversion} --pretty=%B | grep -v '^$' | grep :)
     if [ ${lastcommittext} == "" ]; then 
@@ -84,7 +87,6 @@ if [ $changelogaltered -eq 0 ]; then
     mv CHANGELOG.md.tmp CHANGELOG.md
     echo "${BENDER_KEY}" >> ~/.ssh/id_bender
     chmod 600 ~/.ssh/id_bender
-    export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_bender -F /dev/null" 
     git config --global user.name "Bender"
     git config --global user.email "bender1729@ixxi.io"
     git commit -a -m 'updating change log with latest commit'
