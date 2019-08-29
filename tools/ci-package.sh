@@ -85,6 +85,7 @@ if [ $changelogaltered -eq 0 ]; then
     mv CHANGELOG.md.tmp CHANGELOG.md
     echo "${BENDER_KEY}" >> ~/.ssh/id_bender
     cat ~/.ssh/id_bender
+    ssh-key -l
     chmod 600 ~/.ssh/id_bender
     export GIT_SSH_COMMAND="ssh -vv -i ~/.ssh/id_bender -F /dev/null -o IdentitiesOnly=yes" 
     git config --global user.name "Bender"
