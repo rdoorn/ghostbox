@@ -44,10 +44,7 @@ jobs:
   ok:
     executor: golang
     steps:
-      - run:
-          name: "all is well"
-          command: echo true
-
+      - checkout
 
 workflows:
   version: 2
