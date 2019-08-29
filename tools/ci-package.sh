@@ -74,6 +74,8 @@ changelogaltered=$(git diff --name-status HEAD^1 | grep -c CHANGELOG.md || true)
 if [ $changelogaltered -eq 0 ]; then
     git fetch
     echo "change log was not updated, doing so automaticly..."
+    echo "change log:"
+    git log ${oldversion}...${newversion} --pretty=%B
     lastcommittext=$(git log ${oldversion}...${newversion} --pretty=%B | grep -v '^$' | grep : | true)
     if [ "${lastcommittext}" == "" ]; then 
         lastcommittext="misc: $(git log ${oldversion}...${newversion} --pretty=%B)"
