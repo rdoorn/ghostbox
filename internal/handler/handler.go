@@ -87,9 +87,11 @@ func (h *Handler) Start(c *Config) error {
 	{
 		standardUser := v1.Group("/")
 		standardUser.Use(JWTAuthenticationRequired("user"))
-		standardUser.GET("/hello/:name", h.apiV1Hello)
-		standardUser.GET("/users/:username", h.apiV1AccountGet) // login
+		standardUser.GET("/users/:username", h.apiV1AccountGet)         // login
+		standardUser.POST("/files/:username", h.apiV1FileUploadRequest) // request url to upload file
+		standardUser.POST("/upload/:key", h.apiV1FileUpload)            // upload file with key
 	}
+	router.Static("/static", "./html")
 
 	// start https server
 	h.server = http.Server{

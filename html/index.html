@@ -1,0 +1,26 @@
+<html>
+
+<head>
+  <script type="module" src="to-do-app.js"></script>
+  <script type="module" src="login-handler.js"></script>
+</head>
+
+<body>
+  <login-handler login-url="/login" logout-url="/logout" signup-url="/signup" lostpassword-url="/lostpassword">
+    <template id="authenticated">
+      no auth [[login-url]]
+      <login-button></login-button>
+    </template>
+    <template id="unauthenticated">
+      auth [[login-url]]
+      <slot name="user-name">need name</slot>
+    </template>
+
+  </login-handler>
+</body>
+
+<script>
+</script>
+
+
+</html>
