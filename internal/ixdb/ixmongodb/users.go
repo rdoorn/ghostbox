@@ -3,7 +3,6 @@ package ixmongodb
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
@@ -11,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// CreateUser adds a new user to the database with no rights, and not activated yet
 func (m *MongoDB) CreateUser(username, firstname, lastname, email, passwordSalt, passwordHash, activationToken string) error {
 	emailModel := models.Email{
 		Primary:  true,
@@ -33,6 +33,7 @@ func (m *MongoDB) CreateUser(username, firstname, lastname, email, passwordSalt,
 	return err
 }
 
+// ActivateUser activates a user, based on a provided activation token
 func (m *MongoDB) ActivateUser(id, token string) error {
 	bsonID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -57,15 +58,18 @@ func (m *MongoDB) ActivateUser(id, token string) error {
 	return nil
 }
 
+// GetByEmail returns a user model based on a provided email
 func (m *MongoDB) GetByEmail(email string) (*models.User, error) {
 	//return m.Get(bson.M{"email": email})
 	return m.Get(bson.M{"emails": bson.M{"$elemMatch": bson.M{"email": email}}})
 }
 
+// GetByUsername returns a user model based on a provided username
 func (m *MongoDB) GetByUsername(username string) (*models.User, error) {
 	return m.Get(bson.M{"username": username})
 }
 
+// GetByID returns a user model based on a provided user id
 func (m *MongoDB) GetByID(id string) (*models.User, error) {
 	bsonID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -74,20 +78,7 @@ func (m *MongoDB) GetByID(id string) (*models.User, error) {
 	return m.Get(bson.M{"_id": bsonID})
 }
 
-func (m *MongoDB) Get(filter bson.M) (*models.User, error) {
-	collection := m.database.Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	user := models.User{}
-
-	err := collection.FindOne(ctx, filter).Decode(&user)
-	if err != nil {
-		return nil, fmt.Errorf("not found: %s: %s", filter, err)
-	}
-	return &user, nil
-}
-
+// AddToken adds a token or tokens to an existing user ID
 func (m *MongoDB) AddToken(id string, tokens ...string) error {
 	bsonID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -111,28 +102,7 @@ func (m *MongoDB) AddToken(id string, tokens ...string) error {
 	return nil
 }
 
-func (m *MongoDB) Add(u models.User) (string, error) {
-	collection := m.database.Collection("users")
-	log.Printf("Collection of users: %v", collection)
-	/*	if collection == nil {
-		var err error
-		collection, err = m.CreateCollection("users")
-		if err != nil {
-			return "", err
-		}
-	}*/
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	res, err := collection.InsertOne(ctx, &u)
-	if err != nil {
-		return "", err
-	}
-	if oid, ok := res.InsertedID.(primitive.ObjectID); ok {
-		return oid.String(), nil
-	}
-	return "", err
-}
-
+// SetStorageLimit sets the storage limit object to a specific user
 func (m *MongoDB) SetStorageLimit(id string, limitByte int64) error {
 	bsonID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -142,12 +112,4 @@ func (m *MongoDB) SetStorageLimit(id string, limitByte int64) error {
 	update := bson.M{"$set": bson.M{"storage_max_byte": limitByte}}
 
 	return m.UpdateOne(filter, update)
-}
-
-func (m *MongoDB) UpdateOne(filter, update bson.M) error {
-	collection := m.database.Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	_, err := collection.UpdateOne(ctx, filter, update)
-	return err
 }

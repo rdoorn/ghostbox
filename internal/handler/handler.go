@@ -89,7 +89,7 @@ func (h *Handler) Start(c *Config) error {
 		standardUser.Use(JWTAuthenticationRequired("user"))
 		standardUser.GET("/users/:username", h.apiV1AccountGet)         // login
 		standardUser.POST("/files/:username", h.apiV1FileUploadRequest) // request url to upload file
-		standardUser.POST("/upload/:key", h.apiV1FileUpload)            // upload file with key
+		standardUser.POST("/albums/:album/:key", h.apiV1FileUpload)     // upload file with key
 	}
 	router.Static("/static", "./html")
 
