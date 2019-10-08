@@ -38,7 +38,7 @@ class LoginHandler extends HTMLElement {
     //this.$submitButton = this._shadowRoot.querySelector('button');
     //this.$submitButton.innerHTML = this.attributes.label.value
     //this.$submitButton.addEventListener('click', this._click.bind(this));
-    this.render()
+    //this.render()
   }
 
   static get observedAttributes() {
@@ -52,7 +52,10 @@ class LoginHandler extends HTMLElement {
     this.onClick('Hello from within the Custom Element');
   });*/
   render() {
-    this.$button.innerHTML = this.label;
+    //this.$button.innerHTML = this.label;
+    if this.authenticated {
+
+    }
   }
 
   _click() {
