@@ -1,0 +1,39 @@
+/* Default Sizes and Fonts */
+body {
+  font-family: Tahoma, Geneva, sans-serif;
+  font-size: 14px;
+  background-color: #222222;
+  color: #aaaaaa;
+  margin: 0px;
+  /*margin-top:220px;*/
+  /*margin-top: 50px;*/
+  /*margin-bottom: 20px;*/
+  padding: 0px;
+  background-image: url('background.png');
+  width: 100%;
+}
+
+img {
+  border-style: none;
+}
+
+form, ul, li {
+  margin: 0px;
+  padding: 0px;
+}
+
+a {
+  text-decoration: none;
+  color: #aaaaaa;
+}
+
+a:hover {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+header {
+  height: 50px;
+  vertical-align: middle;
+  background-color: rgba(0, 0, 0, .70);
+}
