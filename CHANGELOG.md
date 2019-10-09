@@ -1,3 +1,7 @@
+# 0.2.4
+
+misc: 
+
 # 0.2.2
 
 misc: fix: change log output
